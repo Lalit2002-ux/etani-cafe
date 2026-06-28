@@ -216,6 +216,19 @@ export default function Admin() {
                     </div>
                     <div className="font-display text-2xl text-etani-terracotta">${o.total.toFixed(2)}</div>
                   </div>
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className={
+                      "text-[10px] uppercase tracking-widest px-2 py-1 rounded-full " +
+                      (o.payment_status === "paid"
+                        ? "bg-etani-sage/15 text-etani-sageDark"
+                        : "bg-etani-paper text-etani-muted")
+                    }>
+                      {o.payment_status === "paid" ? "Paid" : "Unpaid"}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-widest px-2 py-1 rounded-full bg-etani-paper text-etani-muted">
+                      {o.status}
+                    </span>
+                  </div>
                   <div className="mt-3 text-sm text-etani-muted">
                     {o.items.map((i, idx) => (
                       <span key={idx}>{i.quantity}× {i.name}{idx < o.items.length - 1 ? ", " : ""}</span>

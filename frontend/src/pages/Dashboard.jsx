@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { api, formatApiError } from "@/lib/api";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import FoodMenu from "@/components/FoodMenu";
@@ -16,6 +17,52 @@ export default function Dashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [cart, setCart] = useState([]);
+
+  // Handle return from Stripe Checkout
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+    const cancelled = params.get("payment");
+
+    if (cancelled === "cancelled") {
+      toast.error("Payment cancelled. Your order is still pending.");
+      window.history.replaceState({}, "", window.location.pathname);
+      return;
+    }
+
+    if (!sessionId) return;
+
+    let attempts = 0;
+    const maxAttempts = 8;
+    const poll = async () => {
+      attempts += 1;
+      try {
+        const { data } = await api.get(`/checkout/status/${sessionId}`);
+        if (data.payment_status === "paid") {
+          toast.success(`Payment successful! Order #${data.order_id.slice(-6).toUpperCase()} · $${data.amount_total.toFixed(2)}`);
+          sessionStorage.removeItem("etani_pending_session");
+          window.history.replaceState({}, "", window.location.pathname);
+          return;
+        }
+        if (data.status === "expired") {
+          toast.error("Payment session expired. Please try again.");
+          window.history.replaceState({}, "", window.location.pathname);
+          return;
+        }
+        if (attempts < maxAttempts) {
+          setTimeout(poll, 2000);
+        } else {
+          toast("Still processing — refresh to recheck your payment.", { duration: 5000 });
+          window.history.replaceState({}, "", window.location.pathname);
+        }
+      } catch (err) {
+        toast.error(formatApiError(err));
+        window.history.replaceState({}, "", window.location.pathname);
+      }
+    };
+    toast("Confirming your payment…");
+    poll();
+  }, []);
 
   const openFood = (f) => { setSelected(f); setModalOpen(true); };
 

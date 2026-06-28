@@ -29,14 +29,19 @@ export default function CartSheet({ open, onOpenChange, cart, setCart }) {
         items: cart.map((i) => ({ food_id: i.food_id, quantity: i.quantity })),
         notes,
       };
-      const { data } = await api.post("/orders", payload);
-      toast.success(`Order placed! #${data.id.slice(-6).toUpperCase()} · $${data.total.toFixed(2)}`);
+      const { data: order } = await api.post("/orders", payload);
+      // Create Stripe Checkout session and redirect
+      const { data: sess } = await api.post("/checkout/session", {
+        order_id: order.id,
+        origin_url: window.location.origin,
+      });
+      // Persist cart-cleared flag so we can clear on success page
+      sessionStorage.setItem("etani_pending_session", sess.session_id);
       setCart([]);
       setNotes("");
-      onOpenChange(false);
+      window.location.href = sess.url;
     } catch (err) {
       toast.error(formatApiError(err));
-    } finally {
       setBusy(false);
     }
   };
@@ -103,7 +108,7 @@ export default function CartSheet({ open, onOpenChange, cart, setCart }) {
               className="w-full h-12 rounded-full bg-etani-terracotta hover:bg-etani-terracottaDark text-white"
               data-testid="place-order-button"
             >
-              {busy ? "Placing…" : "Place Order"}
+              {busy ? "Redirecting…" : "Pay & Place Order"}
             </Button>
           </div>
         )}

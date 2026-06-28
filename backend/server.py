@@ -118,6 +118,7 @@ class Order(BaseModel):
     total: float
     notes: str = ""
     status: str = "placed"
+    payment_status: str = "unpaid"
     created_at: str
 
 class FeedbackIn(BaseModel):
@@ -137,6 +138,24 @@ class ContactIn(BaseModel):
     email: EmailStr
     subject: str
     message: str
+
+
+class CheckoutSessionIn(BaseModel):
+    order_id: str
+    origin_url: str
+
+
+class CheckoutSessionOut(BaseModel):
+    url: str
+    session_id: str
+
+
+class CheckoutStatusOut(BaseModel):
+    payment_status: str
+    status: str
+    order_id: str
+    amount_total: float
+    currency: str
 
 
 # ---------- Auth dependency ----------
@@ -320,6 +339,7 @@ async def create_order(data: OrderCreate, user: dict = Depends(get_current_user)
         "total": round(total, 2),
         "notes": data.notes or "",
         "status": "placed",
+        "payment_status": "unpaid",
         "created_at": now,
     }
     res = await db.orders.insert_one(doc)
@@ -331,6 +351,7 @@ async def my_orders(user: dict = Depends(get_current_user)):
     return [Order(id=str(d["_id"]), user_id=d["user_id"], user_email=d["user_email"],
                   user_name=d["user_name"], items=d["items"], total=d["total"],
                   notes=d.get("notes", ""), status=d.get("status", "placed"),
+                  payment_status=d.get("payment_status", "unpaid"),
                   created_at=d["created_at"]) for d in docs]
 
 @api_router.get("/orders", response_model=List[Order])
@@ -339,6 +360,7 @@ async def all_orders(_admin: dict = Depends(require_admin)):
     return [Order(id=str(d["_id"]), user_id=d["user_id"], user_email=d["user_email"],
                   user_name=d["user_name"], items=d["items"], total=d["total"],
                   notes=d.get("notes", ""), status=d.get("status", "placed"),
+                  payment_status=d.get("payment_status", "unpaid"),
                   created_at=d["created_at"]) for d in docs]
 
 
