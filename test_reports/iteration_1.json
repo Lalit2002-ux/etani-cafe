@@ -1,0 +1,41 @@
+{
+  "summary": "Latency-sensitive first-finish smoke test of Etani Cafe. Backend: all 14 critical endpoint checks pass (auth login/register/me, role checks, foods CRUD with admin gating, categories, filter by category, orders create+mine+admin list, feedback auth-required, public contact). Frontend: unauth redirect, admin login, navbar links, food grid (14 cards), food modal qty/add-to-order with cart badge update, cart sheet with correct total ($9.00 = 4.5*2), place order clears cart, feedback submit, contact submit, admin panel with Menu Items (14) and Orders (3) tabs, navigation to /admin. Logout exists as a dedicated 'Log out' button on /admin header (also via user menu on dashboard).",
+  "tested_scope": ["backend", "frontend", "auth", "integration"],
+  "passed": [
+    "POST /api/auth/login admin returns token + user.role=admin",
+    "POST /api/auth/login wrong password -> 401",
+    "POST /api/auth/register creates user + returns token",
+    "GET /api/auth/me with Bearer returns current user",
+    "GET /api/foods returns 14 seeded items",
+    "GET /api/foods/categories returns the 6 expected categories",
+    "GET /api/foods?category=Coffee returns only Coffee items (3)",
+    "GET /api/foods/{invalid-objectid} returns 404",
+    "POST /api/foods: 403 for normal user, 200 for admin",
+    "PUT /api/foods/{id} admin -> 200; DELETE /api/foods/{id}: 403 user / 200 admin",
+    "POST /api/orders by user creates order with total=9.0 (2x4.5), status='placed'",
+    "GET /api/orders/mine returns caller's orders only; GET /api/orders 200 for admin, 403 for user",
+    "POST /api/feedback requires auth (401 without); 200 with token; GET /api/feedback public 200",
+    "POST /api/contact public -> ok",
+    "Frontend: unauthenticated visit to / redirects to /login",
+    "Frontend: admin login lands on dashboard; navbar shows brand and all nav links + cart + user menu",
+    "Frontend: food card click opens food-modal with qty +/- and Add to Order; cart-count-badge updates to 2",
+    "Frontend: cart-sheet shows total $9.00, notes input works, place-order succeeds and clears cart",
+    "Frontend: feedback star+message submit works; contact form submit works",
+    "Frontend: admin user sees goto-admin-menu-item; /admin loads with admin-tab-foods (14) and admin-tab-orders (3) including the order just placed"
+  ],
+  "failed": [
+    {
+      "area": "frontend / minor console warning",
+      "issue": "React hydration warning: <button> cannot be a descendant of <button> inside FoodMenu food card (food-card-* button contains a nested Button). Does not break functionality but should be cleaned up.",
+      "evidence": "Console error: 'In HTML, <button> cannot be a descendant of <button>' from FoodMenu.jsx line 70/93.",
+      "priority": "LOW"
+    }
+  ],
+  "action_items": [
+    "Optional cleanup: In FoodMenu.jsx, avoid rendering a <Button> inside the food-card <button> to remove the React DOM nesting warning."
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "retest_needed": false,
+  "full_testing_deferred": true,
+  "test_credentials": "Used /app/memory/test_credentials.md admin (admin@etanicafe.com / Admin@123) and registered fresh test users via /api/auth/register."
+}
