@@ -17,6 +17,9 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field, EmailStr, ConfigDict
+from emergentintegrations.payments.stripe.checkout import (
+    StripeCheckout, CheckoutSessionRequest,
+)
 
 
 # ---------- DB ----------
@@ -367,6 +370,126 @@ async def submit_contact(data: ContactIn):
     doc["created_at"] = datetime.now(timezone.utc).isoformat()
     await db.contacts.insert_one(doc)
     return {"ok": True, "message": "Thank you! We'll get back to you soon."}
+
+
+# ----- Stripe Checkout -----
+def get_stripe_checkout(request: Request) -> StripeCheckout:
+    api_key = os.environ.get("STRIPE_API_KEY", "sk_test_emergent")
+    host_url = str(request.base_url).rstrip("/")
+    webhook_url = f"{host_url}/api/webhook/stripe"
+    return StripeCheckout(api_key=api_key, webhook_url=webhook_url)
+
+
+@api_router.post("/checkout/session", response_model=CheckoutSessionOut)
+async def create_checkout_session(
+    data: CheckoutSessionIn, request: Request, user: dict = Depends(get_current_user)
+):
+    # Server-side: fetch order to derive amount (never trust frontend amount)
+    try:
+        order = await db.orders.find_one({"_id": ObjectId(data.order_id)})
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid order id")
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    if order["user_id"] != user["id"]:
+        raise HTTPException(status_code=403, detail="Not your order")
+    if order.get("payment_status") == "paid":
+        raise HTTPException(status_code=400, detail="Order already paid")
+
+    amount = float(order["total"])
+    origin = data.origin_url.rstrip("/")
+    success_url = f"{origin}/?session_id={{CHECKOUT_SESSION_ID}}"
+    cancel_url = f"{origin}/?payment=cancelled"
+
+    stripe = get_stripe_checkout(request)
+    req = CheckoutSessionRequest(
+        amount=amount,
+        currency="usd",
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata={"order_id": data.order_id, "user_id": user["id"]},
+    )
+    session = await stripe.create_checkout_session(req)
+
+    # Create payment_transactions record BEFORE redirect
+    await db.payment_transactions.insert_one({
+        "session_id": session.session_id,
+        "order_id": data.order_id,
+        "user_id": user["id"],
+        "user_email": user["email"],
+        "amount": amount,
+        "currency": "usd",
+        "payment_status": "initiated",
+        "status": "open",
+        "metadata": {"order_id": data.order_id, "user_id": user["id"]},
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+
+    return CheckoutSessionOut(url=session.url, session_id=session.session_id)
+
+
+@api_router.get("/checkout/status/{session_id}", response_model=CheckoutStatusOut)
+async def get_checkout_status(session_id: str, request: Request, user: dict = Depends(get_current_user)):
+    txn = await db.payment_transactions.find_one({"session_id": session_id})
+    if not txn:
+        raise HTTPException(status_code=404, detail="Session not found")
+    if txn["user_id"] != user["id"]:
+        raise HTTPException(status_code=403, detail="Not your session")
+
+    stripe = get_stripe_checkout(request)
+    status_resp = await stripe.get_checkout_status(session_id)
+
+    # Update transaction (idempotent — only flip to paid once)
+    new_payment_status = status_resp.payment_status
+    new_status = status_resp.status
+    if txn.get("payment_status") != "paid":
+        await db.payment_transactions.update_one(
+            {"session_id": session_id},
+            {"$set": {"payment_status": new_payment_status, "status": new_status,
+                      "updated_at": datetime.now(timezone.utc).isoformat()}},
+        )
+        # Mark the order paid only once
+        if new_payment_status == "paid":
+            await db.orders.update_one(
+                {"_id": ObjectId(txn["order_id"]), "payment_status": {"$ne": "paid"}},
+                {"$set": {"payment_status": "paid", "status": "confirmed",
+                          "paid_at": datetime.now(timezone.utc).isoformat()}},
+            )
+
+    return CheckoutStatusOut(
+        payment_status=new_payment_status,
+        status=new_status,
+        order_id=txn["order_id"],
+        amount_total=float(status_resp.amount_total) / 100.0,
+        currency=status_resp.currency,
+    )
+
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    body = await request.body()
+    sig = request.headers.get("Stripe-Signature", "")
+    stripe = get_stripe_checkout(request)
+    try:
+        event = await stripe.handle_webhook(body, sig)
+    except Exception as e:
+        logger.warning(f"Webhook verify failed: {e}")
+        raise HTTPException(status_code=400, detail="Invalid webhook")
+
+    if event.session_id and event.payment_status == "paid":
+        txn = await db.payment_transactions.find_one({"session_id": event.session_id})
+        if txn and txn.get("payment_status") != "paid":
+            await db.payment_transactions.update_one(
+                {"session_id": event.session_id},
+                {"$set": {"payment_status": "paid", "status": "complete",
+                          "updated_at": datetime.now(timezone.utc).isoformat()}},
+            )
+            await db.orders.update_one(
+                {"_id": ObjectId(txn["order_id"]), "payment_status": {"$ne": "paid"}},
+                {"$set": {"payment_status": "paid", "status": "confirmed",
+                          "paid_at": datetime.now(timezone.utc).isoformat()}},
+            )
+    return {"ok": True}
 
 
 app.include_router(api_router)
