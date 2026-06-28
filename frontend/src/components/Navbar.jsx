@@ -83,6 +83,9 @@ export default function Navbar({ cartCount, onOpenCart }) {
                 <div className="text-xs text-etani-muted">{user?.email}</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem asChild data-testid="goto-myorders-menu-item">
+                <Link to="/orders">My Orders</Link>
+              </DropdownMenuItem>
               {user?.role === "admin" && (
                 <DropdownMenuItem asChild data-testid="goto-admin-menu-item">
                   <Link to="/admin">Admin panel</Link>
