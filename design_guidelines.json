@@ -1,0 +1,154 @@
+{
+  "theme": "light",
+  "archetype": "1 (Organic & Earthy)",
+  "vibe": "Warm, cozy combined with Modern minimal",
+  "typography": {
+    "fonts": {
+      "headings": "Cormorant Garamond, serif",
+      "body": "Outfit, sans-serif"
+    },
+    "hierarchy": {
+      "h1": "text-5xl md:text-6xl tracking-tight leading-none font-bold text-[#2C2523]",
+      "h2": "text-3xl md:text-4xl tracking-tight font-semibold text-[#2C2523]",
+      "h3": "text-xl md:text-2xl font-medium text-[#2C2523]",
+      "body": "text-base leading-relaxed text-[#5C524E]",
+      "small": "text-sm text-[#5C524E] uppercase tracking-widest",
+      "label": "text-sm font-medium text-[#2C2523]"
+    },
+    "setup_instructions": "Add Google Fonts imports for Cormorant Garamond and Outfit to index.css or App.css."
+  },
+  "colors": {
+    "background": {
+      "default": "#FDFBF7",
+      "paper": "#F4F0EA",
+      "glass": "rgba(253, 251, 247, 0.8)"
+    },
+    "surface": {
+      "card": "#FFFFFF",
+      "modal": "#FFFFFF",
+      "admin_panel": "#F4F0EA"
+    },
+    "primary": {
+      "default": "#C86A53",
+      "hover": "#A84B31",
+      "foreground": "#FFFFFF"
+    },
+    "secondary": {
+      "default": "#8A9A86",
+      "hover": "#70806C",
+      "foreground": "#FFFFFF"
+    },
+    "text": {
+      "primary": "#2C2523",
+      "secondary": "#5C524E",
+      "muted": "#9A8F8B",
+      "inverse": "#FFFFFF"
+    },
+    "border": {
+      "default": "#EAE3D9",
+      "focus": "#C86A53"
+    }
+  },
+  "layout_spacing": {
+    "container": "max-w-7xl mx-auto px-6 md:px-12",
+    "section_padding": "py-20 md:py-32",
+    "grid_gaps": "gap-8 md:gap-12",
+    "border_radius": {
+      "sm": "rounded-md",
+      "md": "rounded-xl",
+      "lg": "rounded-2xl",
+      "hero_arch": "rounded-t-[8rem] rounded-b-xl"
+    }
+  },
+  "motion": {
+    "hover_lift": "-translate-y-1 transition-transform duration-300 ease-out",
+    "button_hover": "transition-colors duration-200",
+    "modal_enter": "animate-in fade-in zoom-in-95 duration-200"
+  },
+  "components": {
+    "navbar": {
+      "style": "sticky top-0 z-50 backdrop-blur-xl bg-[#FDFBF7]/80 border-b border-[#EAE3D9]/50",
+      "layout": "flex justify-between items-center h-20",
+      "links": "text-sm uppercase tracking-widest font-medium hover:text-[#C86A53] transition-colors"
+    },
+    "hero": {
+      "layout": "grid grid-cols-1 md:grid-cols-2 gap-12 items-center min-h-[80vh]",
+      "image_style": "w-full h-[60vh] md:h-[80vh] object-cover rounded-t-[8rem] rounded-b-xl shadow-lg"
+    },
+    "food_card": {
+      "container": "group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-[#EAE3D9]/50",
+      "image_wrapper": "relative w-full h-64 overflow-hidden",
+      "image": "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500",
+      "content": "p-6 flex flex-col gap-2",
+      "title": "font-headings text-2xl font-bold text-[#2C2523]",
+      "price": "text-[#C86A53] font-semibold text-lg"
+    },
+    "buttons": {
+      "primary": "bg-[#C86A53] hover:bg-[#A84B31] text-white px-8 py-3 rounded-full font-medium transition-colors",
+      "secondary": "bg-[#F4F0EA] hover:bg-[#EAE3D9] text-[#2C2523] px-8 py-3 rounded-full font-medium transition-colors"
+    },
+    "inputs": {
+      "default": "bg-white border border-[#EAE3D9] rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#C86A53]/20 focus:border-[#C86A53] transition-all outline-none"
+    }
+  },
+  "pages": {
+    "dashboard_home": {
+      "sections": [
+        "Hero (Welcome to Etani Cafe)",
+        "Food Menu Grid (Categories: Coffee, Indian Street Food, Burgers, Pizza, Pasta, Desserts)",
+        "Why Us (3-column icon/text features)",
+        "Feedback Form",
+        "Contact Us (Address, Map placeholder, Socials)"
+      ]
+    },
+    "auth": {
+      "layout": "Centered card with soft shadows on an #F4F0EA background.",
+      "fields": "Email, Password, Name (for signup). Use Shadcn UI forms heavily customized."
+    },
+    "food_detail_modal": {
+      "layout": "Split layout. Left: Large square image. Right: Title, description, quantity selector (+/-), Add to Order CTA.",
+      "ui_element": "Shadcn Dialog customized to remove default borders and add rounded-2xl."
+    },
+    "admin_panel": {
+      "layout": "Sidebar navigation + Main content area. Uses Swiss high-contrast approach for readability, but retains warm brand colors for primary actions.",
+      "features": "List of food items (Table), Add/Edit Modal."
+    }
+  },
+  "media": {
+    "images": {
+      "hero": {
+        "url": "https://images.unsplash.com/photo-1728761390316-935ffeb3fbcc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHwyfHx3YXJtJTIwY296eSUyMGFlc3RoZXRpYyUyMGNhZmUlMjBpbnRlcmlvciUyMGNvZmZlZXxlbnwwfHx8fDE3ODI0MDA4MDl8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Warm, aesthetic cafe interior."
+      },
+      "menu_pizza": {
+        "url": "https://images.unsplash.com/photo-1777333033347-6757045adc9c",
+        "description": "Italian food spread."
+      },
+      "menu_burger": {
+        "url": "https://images.pexels.com/photos/20321807/pexels-photo-20321807.jpeg",
+        "description": "Delicious gourmet spread featuring burger."
+      },
+      "menu_indian": {
+        "url": "https://images.pexels.com/photos/14477873/pexels-photo-14477873.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Plate of crispy samosas."
+      },
+      "menu_coffee": {
+        "url": "https://images.unsplash.com/photo-1684429739445-33c981ee8e92?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzZ8MHwxfHNlYXJjaHw0fHx3YXJtJTIwY296eSUyMGFlc3RoZXRpYyUyMGNhZmUlMjBpbnRlcmlvciUyMGNvZmZlZXxlbnwwfHx8fDE3ODI0MDA4MDl8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Coffee cup on wooden table."
+      }
+    }
+  },
+  "accessibility_and_testing": {
+    "contrast": "Ensure all text on primary buttons and dark backgrounds meets APCA standards.",
+    "testing": "All interactive elements (buttons, links, form inputs) MUST include data-testid attributes (e.g., data-testid='place-order-button')."
+  },
+  "instructions_to_main_agent": [
+    "Strictly follow the color palette. Do NOT use purple gradients or default blue links.",
+    "Use 'Cormorant Garamond' for headings and 'Outfit' for body. Configure these in Tailwind config.",
+    "The 'Dashboard' is the main SPA landing page for the user containing the hero, menu, why us, feedback, and contact sections.",
+    "Implement JWT auth for login/signup.",
+    "The food menu should allow users to click a card, opening a Shadcn Dialog showing the image, description, quantity selector, and an 'Add to Order' button. Adding to order mocks a checkout process.",
+    "Use Shadcn UI for forms, dialogs, and tables (admin), but heavily strip out default styles to match the warm organic theme provided.",
+    "Ensure the hero image uses the rounded-t-[8rem] class for that modern arch look."
+  ]
+}
