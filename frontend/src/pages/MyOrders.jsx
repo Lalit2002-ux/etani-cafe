@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { api, formatApiError } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { ArrowLeft, Coffee, ReceiptText, CreditCard } from "lucide-react";
+import { ArrowLeft, ReceiptText, CreditCard } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
@@ -45,9 +46,8 @@ export default function MyOrders() {
     <div className="min-h-screen bg-etani-bg">
       <header className="sticky top-0 z-30 backdrop-blur-xl bg-etani-bg/80 border-b border-etani-line">
         <div className="max-w-5xl mx-auto px-6 md:px-12 h-20 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-etani-terracotta" data-testid="myorders-brand">
-            <Coffee className="h-6 w-6" />
-            <span className="font-display text-2xl font-semibold">Etani Cafe</span>
+          <Link to="/" className="flex items-center" data-testid="myorders-brand">
+            <Logo className="h-9 w-9" />
           </Link>
           <Button asChild variant="ghost" className="text-etani-ink hover:bg-etani-paper" data-testid="myorders-back-button">
             <Link to="/"><ArrowLeft className="h-4 w-4 mr-1" />Back to menu</Link>

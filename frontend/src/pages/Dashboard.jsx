@@ -99,7 +99,10 @@ export default function Dashboard() {
 
       <footer className="border-t border-etani-line py-10">
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="font-display text-2xl text-etani-ink">Etani Cafe</div>
+          <div className="flex items-center gap-3 text-etani-ink">
+            <img src="https://customer-assets.emergentagent.com/job_food-order-hub-217/artifacts/87652qui_image.png" alt="Etani Cafe" className="h-9 w-9 rounded-full object-cover" />
+            <span className="font-display text-2xl">Etani Cafe</span>
+          </div>
           <div className="text-sm text-etani-muted">© {new Date().getFullYear()} Etani Cafe · Made warm.</div>
         </div>
       </footer>

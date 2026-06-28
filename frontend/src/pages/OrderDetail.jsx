@@ -3,7 +3,8 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { api, formatApiError } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { ArrowLeft, Coffee, Printer, CreditCard } from "lucide-react";
+import { ArrowLeft, Printer, CreditCard } from "lucide-react";
+import { Logo, LOGO_URL } from "@/components/Logo";
 
 export default function OrderDetail() {
   const { id } = useParams();
@@ -60,9 +61,8 @@ export default function OrderDetail() {
 
       <header className="sticky top-0 z-30 backdrop-blur-xl bg-etani-bg/80 border-b border-etani-line no-print">
         <div className="max-w-3xl mx-auto px-6 md:px-12 h-20 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-etani-terracotta" data-testid="receipt-brand">
-            <Coffee className="h-6 w-6" />
-            <span className="font-display text-2xl font-semibold">Etani Cafe</span>
+          <Link to="/" className="flex items-center" data-testid="receipt-brand">
+            <Logo className="h-9 w-9" />
           </Link>
           <Button asChild variant="ghost" className="text-etani-ink hover:bg-etani-paper" data-testid="receipt-back-button">
             <Link to="/orders"><ArrowLeft className="h-4 w-4 mr-1" />All orders</Link>
@@ -102,8 +102,8 @@ export default function OrderDetail() {
         >
           <div className="flex items-start justify-between flex-wrap gap-4 pb-6 border-b border-etani-line">
             <div>
-              <div className="flex items-center gap-2 text-etani-terracotta">
-                <Coffee className="h-6 w-6" />
+              <div className="flex items-center gap-3 text-etani-terracotta">
+                <img src={LOGO_URL} alt="Etani Cafe" className="h-12 w-12 rounded-full object-cover" />
                 <span className="font-display text-3xl font-semibold">Etani Cafe</span>
               </div>
               <p className="mt-2 text-sm text-etani-muted">

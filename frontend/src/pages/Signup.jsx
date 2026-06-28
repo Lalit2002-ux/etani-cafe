@@ -1,11 +1,11 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Coffee } from "lucide-react";
+import { Logo } from "@/components/Logo";
+import { useState } from "react";
 
 export default function Signup() {
   const { register } = useAuth();
@@ -36,9 +36,8 @@ export default function Signup() {
     <div className="min-h-screen grid md:grid-cols-2">
       <div className="flex items-center justify-center p-8 bg-etani-bg order-2 md:order-1">
         <div className="w-full max-w-md">
-          <Link to="/" className="inline-flex items-center gap-2 text-etani-terracotta mb-10" data-testid="brand-link">
-            <Coffee className="h-6 w-6" />
-            <span className="font-display text-2xl font-semibold">Etani Cafe</span>
+          <Link to="/" className="inline-flex items-center mb-10" data-testid="brand-link">
+            <Logo className="h-10 w-10" />
           </Link>
           <h2 className="font-display text-4xl font-semibold text-etani-ink">Join the table</h2>
           <p className="mt-2 text-etani-muted">Create your account to start ordering.</p>

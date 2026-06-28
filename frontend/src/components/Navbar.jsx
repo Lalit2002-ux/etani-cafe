@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,9 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Coffee, ShoppingBag, User as UserIcon, Menu, X } from "lucide-react";
+import { ShoppingBag, User as UserIcon, Menu, X } from "lucide-react";
+import { Logo } from "@/components/Logo";
+import { useState } from "react";
 
 const LINKS = [
   { id: "food", label: "Food" },
@@ -31,9 +32,8 @@ export default function Navbar({ cartCount, onOpenCart }) {
       data-testid="navbar"
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between h-20">
-        <Link to="/" className="flex items-center gap-2 text-etani-terracotta" data-testid="navbar-brand">
-          <Coffee className="h-6 w-6" />
-          <span className="font-display text-2xl font-semibold">Etani Cafe</span>
+        <Link to="/" className="flex items-center" data-testid="navbar-brand">
+          <Logo className="h-9 w-9" />
         </Link>
 
         <nav className="hidden md:flex items-center gap-10">

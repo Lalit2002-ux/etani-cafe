@@ -15,6 +15,7 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Coffee, Pencil, Trash2, Plus, ArrowLeft } from "lucide-react";
+import { LOGO_URL } from "@/components/Logo";
 
 const EMPTY = { name: "", description: "", price: "", category: "", image: "", available: true };
 
@@ -80,7 +81,7 @@ export default function Admin() {
       <header className="sticky top-0 z-30 backdrop-blur-xl bg-etani-bg/80 border-b border-etani-line">
         <div className="max-w-7xl mx-auto px-6 md:px-12 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Coffee className="h-6 w-6 text-etani-terracotta" />
+            <img src={LOGO_URL} alt="Etani Cafe" className="h-9 w-9 rounded-full object-cover" />
             <span className="font-display text-2xl font-semibold text-etani-ink">Etani Admin</span>
           </div>
           <div className="flex items-center gap-3">
