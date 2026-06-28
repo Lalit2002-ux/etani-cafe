@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import { api, formatApiError } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { ArrowLeft, Coffee, ReceiptText } from "lucide-react";
+import { ArrowLeft, Coffee, ReceiptText, CreditCard } from "lucide-react";
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [payingId, setPayingId] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -21,6 +22,20 @@ export default function MyOrders() {
       }
     })();
   }, []);
+
+  const payNow = async (orderId) => {
+    setPayingId(orderId);
+    try {
+      const { data: sess } = await api.post("/checkout/session", {
+        order_id: orderId,
+        origin_url: window.location.origin,
+      });
+      window.location.href = sess.url;
+    } catch (err) {
+      toast.error(formatApiError(err));
+      setPayingId(null);
+    }
+  };
 
   const totalSpent = orders
     .filter((o) => o.payment_status === "paid")
@@ -128,6 +143,30 @@ export default function MyOrders() {
                     Note: {o.notes}
                   </div>
                 )}
+
+                <div className="mt-5 flex flex-wrap gap-3 border-t border-etani-line/60 pt-4">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="rounded-full border-etani-line text-etani-ink hover:bg-etani-paper"
+                    data-testid={`view-receipt-${o.id}`}
+                  >
+                    <Link to={`/orders/${o.id}`}>
+                      <ReceiptText className="h-4 w-4 mr-2" />View receipt
+                    </Link>
+                  </Button>
+                  {!paid && (
+                    <Button
+                      onClick={() => payNow(o.id)}
+                      disabled={payingId === o.id}
+                      className="rounded-full bg-etani-terracotta hover:bg-etani-terracottaDark text-white"
+                      data-testid={`pay-now-${o.id}`}
+                    >
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      {payingId === o.id ? "Redirecting…" : "Pay now"}
+                    </Button>
+                  )}
+                </div>
               </article>
             );
           })}

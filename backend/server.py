@@ -354,6 +354,22 @@ async def my_orders(user: dict = Depends(get_current_user)):
                   payment_status=d.get("payment_status", "unpaid"),
                   created_at=d["created_at"]) for d in docs]
 
+@api_router.get("/orders/{order_id}", response_model=Order)
+async def get_order(order_id: str, user: dict = Depends(get_current_user)):
+    try:
+        d = await db.orders.find_one({"_id": ObjectId(order_id)})
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid order id")
+    if not d:
+        raise HTTPException(status_code=404, detail="Order not found")
+    if d["user_id"] != user["id"] and user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not your order")
+    return Order(id=str(d["_id"]), user_id=d["user_id"], user_email=d["user_email"],
+                 user_name=d["user_name"], items=d["items"], total=d["total"],
+                 notes=d.get("notes", ""), status=d.get("status", "placed"),
+                 payment_status=d.get("payment_status", "unpaid"),
+                 created_at=d["created_at"])
+
 @api_router.get("/orders", response_model=List[Order])
 async def all_orders(_admin: dict = Depends(require_admin)):
     docs = await db.orders.find({}).sort("created_at", -1).to_list(500)

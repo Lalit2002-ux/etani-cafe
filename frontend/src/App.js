@@ -7,6 +7,7 @@ import Signup from "@/pages/Signup";
 import Dashboard from "@/pages/Dashboard";
 import Admin from "@/pages/Admin";
 import MyOrders from "@/pages/MyOrders";
+import OrderDetail from "@/pages/OrderDetail";
 
 function Protected({ children, adminOnly = false }) {
   const { user, loading } = useAuth();
@@ -32,6 +33,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/" element={<Protected><Dashboard /></Protected>} />
             <Route path="/orders" element={<Protected><MyOrders /></Protected>} />
+            <Route path="/orders/:id" element={<Protected><OrderDetail /></Protected>} />
             <Route path="/admin" element={<Protected adminOnly><Admin /></Protected>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
