@@ -28,13 +28,15 @@ Build a fully responsive restaurant ordering website named **Etani Cafe**.
 - JWT auth (register, login, /me) with bcrypt
 - Admin seed on startup
 - Food CRUD (admin) + public list/detail + categories
-- Order placement (mock checkout) + my-orders + all-orders (admin)
+- Order placement + my-orders + all-orders (admin)
+- **Stripe Checkout (TEST MODE)** — `/api/checkout/session`, `/api/checkout/status/{id}`, `/api/webhook/stripe`. Uses `sk_test_emergent`. No real charges.
+- Payment-status polling on Dashboard return, idempotent order-paid flip
 - Feedback (auth) + Contact (public)
 - Pre-seeded 14 food items across 6 categories
 - Login & Signup pages
 - Dashboard SPA: Hero, Menu grid, Food detail modal with qty, Cart sheet,
   Why Us, Feedback form, Contact form, Navbar with smooth scroll
-- Admin panel: list/add/edit/delete foods, view orders
+- Admin panel: list/add/edit/delete foods, view orders with paid/unpaid badge
 - Warm "Organic & Earthy" theme (Cormorant Garamond + Outfit)
 
 ## Backlog
